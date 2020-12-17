@@ -4,6 +4,12 @@
     -
     <消费者组 ConsumerGroup>
         一组只对一个消息消费一次
+
+        <Coordinator>
+            Coordinator 是一个服务，每个Broker在启动的时候都会启动一个该服务
+            Coordinator的作用是用来存储Group的相关Meta信息，并将对应Partition的Offset信息记录到Kafka内置Topic`__consumer_offsets`中
+            Kafka在0.9之前是基于Zookeeper来存储Partition的Offset信息 `consumers/{group}/offsets/{topic}/{partition}`
+            因为ZK并不适用于频繁的写操作，所以在0.9之后通过内置Topic的方式来记录对应Partition的Offset
         <session>
             一组 ConsumerGroupClaim 的这一轮的生命周期称作一个 session
         <claim>
@@ -49,3 +55,9 @@
         由 leader 负责所有对该分区的读写
         其他 server 作为 follower 只需要简单的与 leader 同步，保持跟进即可
         如果原来的 leader 失效，会重新选举由其他的 follower 来成为新的 leader
+
+<元信息 metadata>
+    集群中的每一个broker都保存着相同的完整的整个集群的metadata
+    metadata信息里包括了每个topic的所有partition的信息:
+        leader, leader_epoch, controller_epoch, isr, replicas等
+    Kafka客户端从任一broker都可以获取到需要的metadata信息
